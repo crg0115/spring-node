@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	 http://www.springframework.org/schema/util 
+	 http://www.springframework.org/schema/util/spring-util-3.0.xsd
+	 http://www.springframework.org/schema/tx 
+	 http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	 http://www.springframework.org/schema/aop
+	 http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+    <!-- 订单推送数据 -->
+    <bean id="testChain" class="com.nk.chenrg.frame.impl.DefaultChain">
+        <property name="first" value="paramValidate"/>
+        <property name="nodes">
+            <list>
+                <!-- 初始化并验证参数 -->
+                <bean class="com.nk.chenrg.chain.ParamValidateNode">
+                    <property name="name" value="paramValidate"/>
+                    <property name="parameters">
+                        <util:list>
+                            <bean class="com.nk.chenrg.chain.Param">
+                                <property name="name" value="start_date"/>
+                                <property name="required" value="true"/>
+                                <property name="type" value="string"/>
+                            </bean>
+                        </util:list>
+                    </property>
+                    <property name="forwards">
+                        <map>
+                            <entry key="next" value="testNode1"/>
+                            <entry key="error" value="error"/>
+                        </map>
+                    </property>
+                </bean>
+
+                <!-- 测试node1 -->
+                <bean class="com.nk.chenrg.example.TestNode1">
+                    <property name="name" value="testNode1"/>
+                    <property name="forwards">
+                        <map>
+                            <entry key="next" value="testNode2"/>
+                            <entry key="error" value="error"/>
+                        </map>
+                    </property>
+                </bean>
+
+                <!-- 测试node2 -->
+                <bean class="com.nk.chenrg.example.TestNode2">
+                    <property name="name" value="testNode2"/>
+                    <property name="forwards">
+                        <map>
+                            <entry key="next" value="success"/>
+                            <entry key="error" value="error"/>
+                        </map>
+                    </property>
+                </bean>
+
+                <!-- 错误节点 -->
+                <bean class="com.nk.chenrg.chain.ErrorNode">
+                    <property name="name" value="error"/>
+                </bean>
+
+                <!-- 成功节点 -->
+                <bean class="com.nk.chenrg.chain.SuccessNode">
+                    <property name="name" value="success"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+</beans>
